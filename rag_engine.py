@@ -3,11 +3,18 @@ from dotenv import load_dotenv
 from groq import Groq
 from weather_service import get_coordinates, get_live_weather
 
-# Load environment variables
+# Load environment variables (local .env)
 load_dotenv()
 
-# Initialize Groq Client safely
+# Read API key — works both locally (.env) and on Streamlit Cloud (st.secrets)
 api_key = os.getenv("GROQ_API_KEY")
+if not api_key:
+    try:
+        import streamlit as st
+        api_key = st.secrets.get("GROQ_API_KEY")
+    except Exception:
+        pass
+
 client = Groq(api_key=api_key) if api_key else None
 
 def evaluate_disaster_risk(weather_data):
